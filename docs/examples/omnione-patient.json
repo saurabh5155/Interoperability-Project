@@ -1,0 +1,62 @@
+{
+  "_comment": "Omnione target format with EBPLP hierarchy — output after transformation",
+  "patientRecord": {
+    "patientId": "ECW-PT-10045",
+    "systemIdentifiers": {
+      "mrnNumber": "MRN-78901",
+      "sourceSystem": "ECW",
+      "interopCorrelationId": "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+    },
+    "demographics": {
+      "lastName": "Doe",
+      "firstName": "Jane",
+      "middleName": "Elizabeth",
+      "dateOfBirth": "1985-03-22",
+      "genderCode": "F",
+      "maritalStatusCode": "M",
+      "preferredLanguageCode": "en"
+    },
+    "contactInfo": {
+      "primaryPhone": "+15551234567",
+      "emailAddress": "jane.doe@example.com",
+      "address": {
+        "addressLine1": "123 Oak Street",
+        "addressLine2": null,
+        "city": "Springfield",
+        "stateCode": "IL",
+        "postalCode": "62701",
+        "countryCode": "US"
+      }
+    },
+    "ebplpHierarchy": {
+      "_comment": "EBPLP = Enterprise Business Practice Logical Practice — resolved via context-resolver-service",
+      "enterpriseId": "ENT-001",
+      "enterpriseName": "Healthcare Network Inc.",
+      "businessId": "BUS-042",
+      "businessName": "Springfield Region",
+      "practiceId": "PRAC-0087",
+      "practiceName": "Springfield Medical Center",
+      "logicalPracticeId": "LP-2201",
+      "logicalPracticeName": "Internal Medicine"
+    },
+    "providerInfo": {
+      "primaryProviderNpi": "1234567890",
+      "primaryProviderName": "Dr. Robert Smith",
+      "facilityNpi": "0987654321"
+    },
+    "insuranceInfo": {
+      "primaryPayerName": "Blue Cross Blue Shield",
+      "memberId": "BCBS-12345",
+      "groupNumber": "GRP-001",
+      "effectiveDate": "2024-01-01"
+    },
+    "metadata": {
+      "createdBy": "interop-platform",
+      "createdAt": "2024-04-18T10:00:15Z",
+      "transformationVersion": "1.0.0",
+      "fhirVersion": "R4",
+      "mappingTemplateId": "3f7a9b21-d4e5-4c6f-a8b1-c9d0e1f23456",
+      "aiMappingUsed": false
+    }
+  }
+}

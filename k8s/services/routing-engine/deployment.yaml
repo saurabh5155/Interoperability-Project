@@ -1,0 +1,70 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: routing-engine
+  namespace: interop
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: routing-engine
+  template:
+    metadata:
+      labels:
+        app: routing-engine
+    spec:
+      containers:
+        - name: routing-engine
+          image: ghcr.io/your-org/routing-engine:latest
+          ports:
+            - containerPort: 8083
+          envFrom:
+            - configMapRef:
+                name: interop-config
+            - secretRef:
+                name: interop-secrets
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "200m"
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
+          readinessProbe:
+            httpGet:
+              path: /actuator/health
+              port: 8083
+            initialDelaySeconds: 20
+            periodSeconds: 10
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: routing-engine
+  namespace: interop
+spec:
+  selector:
+    app: routing-engine
+  ports:
+    - port: 8083
+      targetPort: 8083
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: routing-engine-hpa
+  namespace: interop
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: routing-engine
+  minReplicas: 3
+  maxReplicas: 20
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 65

@@ -1,0 +1,43 @@
+{
+  "_comment": "Sample ECW (eClinicalWorks) patient record — source format",
+  "patient": {
+    "id": "ECW-PT-10045",
+    "mrn": "MRN-78901",
+    "firstName": "Jane",
+    "lastName": "Doe",
+    "fullName": "Jane Elizabeth Doe",
+    "dateOfBirth": "1985-03-22",
+    "gender": "Female",
+    "ssn": "***-**-1234",
+    "phone": "5551234567",
+    "email": "jane.doe@example.com",
+    "preferredLanguage": "English",
+    "race": "White",
+    "ethnicity": "Non-Hispanic",
+    "maritalStatus": "Married",
+    "address": {
+      "street": "123 Oak Street",
+      "city": "Springfield",
+      "state": "IL",
+      "zip": "62701",
+      "country": "US"
+    },
+    "insurance": {
+      "primaryPayer": "Blue Cross Blue Shield",
+      "memberId": "BCBS-12345",
+      "groupNumber": "GRP-001",
+      "effectiveDate": "2024-01-01"
+    },
+    "primaryProvider": {
+      "npi": "1234567890",
+      "firstName": "Dr. Robert",
+      "lastName": "Smith",
+      "specialty": "Internal Medicine"
+    },
+    "facility": {
+      "facilityId": "FAC-001",
+      "facilityName": "Springfield Medical Center",
+      "npi": "0987654321"
+    }
+  }
+}

@@ -1,0 +1,53 @@
+server:
+  port: 8085
+
+spring:
+  application:
+    name: mapping-service
+  datasource:
+    url: jdbc:postgresql://${POSTGRES_HOST:localhost}:${POSTGRES_PORT:5432}/${POSTGRES_DB:interop_db}
+    username: ${POSTGRES_USER:interop_user}
+    password: ${POSTGRES_PASSWORD:changeme}
+    hikari:
+      maximum-pool-size: 20
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+
+anthropic:
+  api-key: ${ANTHROPIC_API_KEY:}
+
+ai:
+  model: ${ANTHROPIC_MODEL:claude-sonnet-4-6}
+  max-tokens: ${ANTHROPIC_MAX_TOKENS:4096}
+
+services:
+  fhir-service:
+    url: ${FHIR_CANONICAL_SERVICE_URL:http://fhir-canonical-service:8086}
+  context-resolver:
+    url: ${CONTEXT_RESOLVER_SERVICE_URL:http://context-resolver-service:8087}
+  dynamic-adapter:
+    url: ${DYNAMIC_ADAPTER_SERVICE_URL:http://dynamic-adapter-service:8084}
+  validation-service:
+    url: ${VALIDATION_SERVICE_URL:http://validation-service:8088}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+
+logging:
+  level:
+    com.healthcare.interop: INFO
+    com.anthropic: WARN

@@ -1,0 +1,102 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: api-gateway
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+  cloud:
+    gateway:
+      default-filters:
+        - AddResponseHeader=X-Powered-By, Healthcare-Interop-Platform
+        - AddResponseHeader=X-Frame-Options, DENY
+        - AddResponseHeader=X-Content-Type-Options, nosniff
+      routes:
+        # ─── EHR Registration (public registration + admin management) ─────
+        - id: ehr-registration
+          uri: http://${EHR_REGISTRATION_HOST:ehr-registration-service}:8081
+          predicates:
+            - Path=/api/v1/ehr/**
+          filters:
+            - name: RequestRateLimiter
+              args:
+                redis-rate-limiter.replenishRate: 20
+                redis-rate-limiter.burstCapacity: 40
+                key-resolver: "#{@apiKeyResolver}"
+            - name: CircuitBreaker
+              args:
+                name: ehr-registration
+                fallbackUri: forward:/fallback
+
+        # ─── Data Ingestion (EHR-facing, API key auth) ──────────────────────
+        - id: ingest
+          uri: http://${ROUTING_ENGINE_HOST:routing-engine}:8083
+          predicates:
+            - Path=/api/v1/ingest/**
+          filters:
+            - ApiKeyAuthFilter
+            - name: RequestRateLimiter
+              args:
+                redis-rate-limiter.replenishRate: 100
+                redis-rate-limiter.burstCapacity: 200
+                key-resolver: "#{@apiKeyResolver}"
+            - name: CircuitBreaker
+              args:
+                name: routing-engine
+                fallbackUri: forward:/fallback
+
+        # ─── Admin Portal APIs (JWT auth required) ───────────────────────────
+        - id: admin-subscriptions
+          uri: http://${SUBSCRIPTION_SERVICE_HOST:subscription-service}:8082
+          predicates:
+            - Path=/api/v1/admin/**
+          filters:
+            - AdminJwtFilter
+            - name: RequestRateLimiter
+              args:
+                redis-rate-limiter.replenishRate: 50
+                redis-rate-limiter.burstCapacity: 100
+                key-resolver: "#{@adminJwtResolver}"
+
+        # ─── Audit Queries (admin JWT required) ─────────────────────────────
+        - id: audit
+          uri: http://${AUDIT_SERVICE_HOST:audit-service}:8089
+          predicates:
+            - Path=/api/v1/audit/**
+          filters:
+            - AdminJwtFilter
+
+        # ─── Internal health checks ─────────────────────────────────────────
+        - id: health-aggregated
+          uri: http://localhost:8080
+          predicates:
+            - Path=/health
+          filters:
+            - RewritePath=/health, /actuator/health
+
+      globalcors:
+        corsConfigurations:
+          '[/**]':
+            allowedOrigins:
+              - "http://localhost:3000"
+              - "http://localhost:3001"
+              - "${ADMIN_PORTAL_ORIGIN:https://admin.your-domain.com}"
+              - "${EHR_PORTAL_ORIGIN:https://portal.your-domain.com}"
+            allowedMethods: [GET, POST, PUT, PATCH, DELETE, OPTIONS]
+            allowedHeaders: ['*']
+            allowCredentials: true
+            maxAge: 3600
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,gateway
+
+logging:
+  level:
+    org.springframework.cloud.gateway: INFO
+    com.healthcare.interop: INFO

@@ -1,0 +1,25 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: interop-config
+  namespace: interop
+data:
+  POSTGRES_HOST: "postgres-service"
+  POSTGRES_PORT: "5432"
+  POSTGRES_DB: "interop_db"
+  REDIS_HOST: "redis-service"
+  REDIS_PORT: "6379"
+  KAFKA_BOOTSTRAP_SERVERS: "kafka-service:9092"
+  ANTHROPIC_MODEL: "claude-sonnet-4-6"
+  ANTHROPIC_MAX_TOKENS: "4096"
+  FHIR_VERSION: "R4"
+  # Service URLs
+  EHR_REGISTRATION_SERVICE_URL: "http://ehr-registration-service:8081"
+  SUBSCRIPTION_SERVICE_URL: "http://subscription-service:8082"
+  ROUTING_ENGINE_URL: "http://routing-engine:8083"
+  DYNAMIC_ADAPTER_SERVICE_URL: "http://dynamic-adapter-service:8084"
+  MAPPING_SERVICE_URL: "http://mapping-service:8085"
+  FHIR_CANONICAL_SERVICE_URL: "http://fhir-canonical-service:8086"
+  CONTEXT_RESOLVER_SERVICE_URL: "http://context-resolver-service:8087"
+  VALIDATION_SERVICE_URL: "http://validation-service:8088"
+  AUDIT_SERVICE_URL: "http://audit-service:8089"

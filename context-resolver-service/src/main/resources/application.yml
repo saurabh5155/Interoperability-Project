@@ -1,0 +1,28 @@
+server:
+  port: 8087
+
+spring:
+  application:
+    name: context-resolver-service
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+
+services:
+  ehr-registration:
+    url: ${EHR_REGISTRATION_SERVICE_URL:http://ehr-registration-service:8081}
+
+resilience4j:
+  circuitbreaker:
+    instances:
+      context-resolver:
+        slidingWindowSize: 5
+        failureRateThreshold: 60
+        waitDurationInOpenState: 30s
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics

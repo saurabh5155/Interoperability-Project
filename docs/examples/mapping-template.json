@@ -1,0 +1,113 @@
+{
+  "_comment": "Sample mapping template: ECW → OMNIONE / Patient resource",
+  "id": "3f7a9b21-d4e5-4c6f-a8b1-c9d0e1f23456",
+  "sourceEhrCode": "ECW",
+  "targetEhrCode": "OMNIONE",
+  "resourceType": "PATIENT",
+  "version": "1.0.0",
+  "status": "ACTIVE",
+  "aiGenerated": false,
+  "createdBy": "system",
+  "fieldMappings": [
+    {
+      "sourceField": "patient.id",
+      "targetField": "patientRecord.patientId",
+      "transformFunction": null,
+      "defaultValue": null,
+      "required": true,
+      "confidenceScore": 1.0,
+      "notes": "Direct ID mapping"
+    },
+    {
+      "sourceField": "patient.mrn",
+      "targetField": "patientRecord.systemIdentifiers.mrnNumber",
+      "transformFunction": null,
+      "defaultValue": null,
+      "required": true,
+      "confidenceScore": 0.99,
+      "notes": "MRN to systemIdentifiers"
+    },
+    {
+      "sourceField": "patient.firstName",
+      "targetField": "patientRecord.demographics.firstName",
+      "transformFunction": null,
+      "defaultValue": null,
+      "required": true,
+      "confidenceScore": 0.99
+    },
+    {
+      "sourceField": "patient.lastName",
+      "targetField": "patientRecord.demographics.lastName",
+      "transformFunction": null,
+      "defaultValue": null,
+      "required": true,
+      "confidenceScore": 0.99
+    },
+    {
+      "sourceField": "patient.dateOfBirth",
+      "targetField": "patientRecord.demographics.dateOfBirth",
+      "transformFunction": "DATE_FORMAT_ISO",
+      "defaultValue": null,
+      "required": true,
+      "confidenceScore": 0.98,
+      "notes": "Normalize to YYYY-MM-DD"
+    },
+    {
+      "sourceField": "patient.gender",
+      "targetField": "patientRecord.demographics.genderCode",
+      "transformFunction": "TO_UPPERCASE",
+      "defaultValue": "U",
+      "required": false,
+      "confidenceScore": 0.92,
+      "notes": "ECW uses full word, Omnione uses single char code"
+    },
+    {
+      "sourceField": "patient.phone",
+      "targetField": "patientRecord.contactInfo.primaryPhone",
+      "transformFunction": "PHONE_FORMAT",
+      "defaultValue": null,
+      "required": false,
+      "confidenceScore": 0.95
+    },
+    {
+      "sourceField": "patient.email",
+      "targetField": "patientRecord.contactInfo.emailAddress",
+      "transformFunction": null,
+      "defaultValue": null,
+      "required": false,
+      "confidenceScore": 0.97
+    },
+    {
+      "sourceField": "patient.address.street",
+      "targetField": "patientRecord.contactInfo.address.addressLine1",
+      "transformFunction": null,
+      "defaultValue": null,
+      "required": false,
+      "confidenceScore": 0.96
+    },
+    {
+      "sourceField": "patient.address.city",
+      "targetField": "patientRecord.contactInfo.address.city",
+      "transformFunction": null,
+      "defaultValue": null,
+      "required": false,
+      "confidenceScore": 0.97
+    },
+    {
+      "sourceField": "patient.address.state",
+      "targetField": "patientRecord.contactInfo.address.stateCode",
+      "transformFunction": null,
+      "defaultValue": null,
+      "required": false,
+      "confidenceScore": 0.97
+    },
+    {
+      "sourceField": "patient.address.zip",
+      "targetField": "patientRecord.contactInfo.address.postalCode",
+      "transformFunction": null,
+      "defaultValue": null,
+      "required": false,
+      "confidenceScore": 0.97
+    }
+  ]
+}

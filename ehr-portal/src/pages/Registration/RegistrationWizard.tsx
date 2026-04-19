@@ -5,7 +5,7 @@ import {
 } from 'antd';
 import {
   UserOutlined, ApiOutlined, SettingOutlined,
-  CheckCircleOutlined, LinkOutlined
+  CheckCircleOutlined, LinkOutlined, CopyOutlined, EyeOutlined, EyeInvisibleOutlined
 } from '@ant-design/icons';
 import axios from 'axios';
 
@@ -46,6 +46,7 @@ export const RegistrationWizard: React.FC = () => {
   const [endpoints, setEndpoints] = useState<EndpointConfig[]>([]);
   const [testResult, setTestResult] = useState<{ success: boolean; message: string } | null>(null);
   const [apiKey, setApiKey] = useState<string>('');
+  const [apiKeyVisible, setApiKeyVisible] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const [form1] = Form.useForm();
@@ -126,6 +127,19 @@ export const RegistrationWizard: React.FC = () => {
       setLoading(false);
     }
   };
+
+  const copyApiKey = () => {
+    if (!apiKey) return;
+    navigator.clipboard.writeText(apiKey).then(() => {
+      message.success('API key copied to clipboard');
+    }).catch(() => {
+      message.error('Copy failed — please select and copy the key manually');
+    });
+  };
+
+  const maskedKey = apiKey
+    ? apiKey.substring(0, 8) + '•'.repeat(Math.max(0, apiKey.length - 12)) + apiKey.slice(-4)
+    : '';
 
   const steps = [
     {
@@ -293,9 +307,35 @@ export const RegistrationWizard: React.FC = () => {
             <Alert
               key="key"
               type="warning"
-              message="Your API Key (save this — it won't be shown again)"
+              message="Your API Key — save this securely before leaving this page"
               description={
-                <code style={{ fontSize: 14, wordBreak: 'break-all' }}>{apiKey}</code>
+                <div>
+                  <Paragraph style={{ marginBottom: 8 }}>
+                    This key is shown <strong>only once</strong> and cannot be retrieved again.
+                    Store it in a password manager or secrets vault immediately.
+                  </Paragraph>
+                  <Space>
+                    <code style={{ fontSize: 14, wordBreak: 'break-all', letterSpacing: 1 }}>
+                      {apiKeyVisible ? apiKey : maskedKey}
+                    </code>
+                    <Tooltip title={apiKeyVisible ? 'Hide key' : 'Reveal key'}>
+                      <Button
+                        icon={apiKeyVisible ? <EyeInvisibleOutlined /> : <EyeOutlined />}
+                        size="small"
+                        onClick={() => setApiKeyVisible(v => !v)}
+                      />
+                    </Tooltip>
+                    <Tooltip title="Copy to clipboard">
+                      <Button
+                        icon={<CopyOutlined />}
+                        size="small"
+                        onClick={copyApiKey}
+                      >
+                        Copy
+                      </Button>
+                    </Tooltip>
+                  </Space>
+                </div>
               }
             />,
             <Button key="portal" type="primary" onClick={() => window.location.href = '/dashboard'}>

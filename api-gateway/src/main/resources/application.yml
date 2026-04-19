@@ -17,6 +17,18 @@ spring:
         - AddResponseHeader=X-Frame-Options, DENY
         - AddResponseHeader=X-Content-Type-Options, nosniff
       routes:
+        # ─── Admin Authentication (public — no JWT required) ─────────────────
+        - id: admin-auth
+          uri: http://${EHR_REGISTRATION_HOST:ehr-registration-service}:8081
+          predicates:
+            - Path=/api/v1/auth/admin/**
+          filters:
+            - name: RequestRateLimiter
+              args:
+                redis-rate-limiter.replenishRate: 5
+                redis-rate-limiter.burstCapacity: 10
+                key-resolver: "#{@apiKeyResolver}"
+
         # ─── EHR Registration (public registration + admin management) ─────
         - id: ehr-registration
           uri: http://${EHR_REGISTRATION_HOST:ehr-registration-service}:8081
@@ -89,6 +101,10 @@ spring:
             allowedHeaders: ['*']
             allowCredentials: true
             maxAge: 3600
+
+security:
+  jwt:
+    secret: ${JWT_SECRET}
 
 management:
   server:

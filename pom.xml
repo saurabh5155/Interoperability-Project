@@ -41,6 +41,8 @@
         <json-schema-validator.version>1.4.0</json-schema-validator.version>
         <testcontainers.version>1.19.7</testcontainers.version>
         <micrometer-tracing.version>1.2.3</micrometer-tracing.version>
+        <jjwt.version>0.12.6</jjwt.version>
+        <bcrypt.version>0.10.2</bcrypt.version>
     </properties>
 
     <dependencyManagement>
@@ -150,6 +152,32 @@
                 <groupId>io.opentelemetry</groupId>
                 <artifactId>opentelemetry-exporter-otlp</artifactId>
                 <version>1.34.1</version>
+            </dependency>
+
+            <!-- JJWT (JWT generation/validation) -->
+            <dependency>
+                <groupId>io.jsonwebtoken</groupId>
+                <artifactId>jjwt-api</artifactId>
+                <version>${jjwt.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.jsonwebtoken</groupId>
+                <artifactId>jjwt-impl</artifactId>
+                <version>${jjwt.version}</version>
+                <scope>runtime</scope>
+            </dependency>
+            <dependency>
+                <groupId>io.jsonwebtoken</groupId>
+                <artifactId>jjwt-jackson</artifactId>
+                <version>${jjwt.version}</version>
+                <scope>runtime</scope>
+            </dependency>
+
+            <!-- BCrypt password hashing -->
+            <dependency>
+                <groupId>at.favre.lib</groupId>
+                <artifactId>bcrypt</artifactId>
+                <version>${bcrypt.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

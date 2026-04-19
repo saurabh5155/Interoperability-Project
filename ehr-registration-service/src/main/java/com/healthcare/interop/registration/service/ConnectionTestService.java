@@ -16,21 +16,20 @@ public class ConnectionTestService {
 
     private final WebClient.Builder webClientBuilder;
 
-    public boolean test(EhrRegistrationEntity ehr) {
-        try {
-            WebClient client = webClientBuilder.baseUrl(ehr.getBaseUrl()).build();
-            client.get()
-                .uri("/health")
-                .retrieve()
-                .toBodilessEntity()
-                .timeout(Duration.ofSeconds(10))
-                .onErrorResume(e -> Mono.empty())
-                .block();
-            log.info("Connection test passed for EHR: {}", ehr.getEhrCode());
-            return true;
-        } catch (Exception e) {
-            log.warn("Connection test failed for EHR: {} - {}", ehr.getEhrCode(), e.getMessage());
-            return false;
-        }
+    public Mono<Boolean> test(EhrRegistrationEntity ehr) {
+        return webClientBuilder.baseUrl(ehr.getBaseUrl()).build()
+            .get()
+            .uri("/health")
+            .retrieve()
+            .toBodilessEntity()
+            .timeout(Duration.ofSeconds(10))
+            .thenReturn(true)
+            .onErrorResume(e -> {
+                log.warn("Connection test failed for EHR: {} - {}", ehr.getEhrCode(), e.getMessage());
+                return Mono.just(false);
+            })
+            .doOnNext(ok -> {
+                if (ok) log.info("Connection test passed for EHR: {}", ehr.getEhrCode());
+            });
     }
 }

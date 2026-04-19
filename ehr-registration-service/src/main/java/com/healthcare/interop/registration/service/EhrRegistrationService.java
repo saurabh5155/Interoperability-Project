@@ -13,6 +13,8 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import reactor.core.publisher.Mono;
+
 import java.util.List;
 import java.util.UUID;
 
@@ -92,7 +94,7 @@ public class EhrRegistrationService {
         return newApiKey;
     }
 
-    public boolean testConnection(String ehrCode) {
+    public Mono<Boolean> testConnection(String ehrCode) {
         EhrRegistrationEntity entity = findByCode(ehrCode);
         return connectionTestService.test(entity);
     }

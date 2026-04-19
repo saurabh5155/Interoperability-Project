@@ -14,6 +14,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import reactor.core.publisher.Mono;
+
 import java.util.List;
 import java.util.Map;
 
@@ -44,13 +46,13 @@ public class EhrRegistrationController {
     }
 
     @PostMapping("/{ehrCode}/test")
-    public ResponseEntity<Map<String, Object>> testConnection(@PathVariable String ehrCode) {
-        boolean success = registrationService.testConnection(ehrCode);
-        return ResponseEntity.ok(Map.of(
-            "ehrCode", ehrCode,
-            "connectionSuccessful", success,
-            "message", success ? "Connection verified" : "Connection failed"
-        ));
+    public Mono<ResponseEntity<Map<String, Object>>> testConnection(@PathVariable String ehrCode) {
+        return registrationService.testConnection(ehrCode)
+            .map(success -> ResponseEntity.ok(Map.<String, Object>of(
+                "ehrCode", ehrCode,
+                "connectionSuccessful", success,
+                "message", success ? "Connection verified" : "Connection failed"
+            )));
     }
 
     @PostMapping("/{ehrCode}/suspend")

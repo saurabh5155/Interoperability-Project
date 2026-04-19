@@ -1,22 +1,19 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: mapping-service
+  name: api-gateway
   namespace: interop
   labels:
-    app: mapping-service
-    version: v1
+    app: api-gateway
 spec:
   replicas: 2
   selector:
     matchLabels:
-      app: mapping-service
+      app: api-gateway
   template:
     metadata:
       labels:
-        app: mapping-service
-        version: v1
-      labels:
+        app: api-gateway
         tier: backend
     spec:
       securityContext:
@@ -24,11 +21,11 @@ spec:
         runAsUser: 1000
         fsGroup: 1000
       containers:
-        - name: mapping-service
-          image: ghcr.io/your-org/mapping-service:latest
+        - name: api-gateway
+          image: ghcr.io/your-org/api-gateway:latest
           ports:
             - name: http
-              containerPort: 8085
+              containerPort: 8080
             - name: management
               containerPort: 9090
           envFrom:
@@ -38,60 +35,57 @@ spec:
                 name: interop-secrets
           resources:
             requests:
-              memory: "512Mi"
-              cpu: "250m"
+              memory: "256Mi"
+              cpu: "200m"
             limits:
-              memory: "1Gi"
-              cpu: "1000m"
+              memory: "512Mi"
+              cpu: "500m"
           livenessProbe:
             httpGet:
               path: /actuator/health/liveness
               port: 9090
-            initialDelaySeconds: 60
-            periodSeconds: 30
+            initialDelaySeconds: 30
+            periodSeconds: 15
             failureThreshold: 3
           readinessProbe:
             httpGet:
               path: /actuator/health/readiness
               port: 9090
-            initialDelaySeconds: 30
+            initialDelaySeconds: 15
             periodSeconds: 10
             failureThreshold: 3
           startupProbe:
             httpGet:
               path: /actuator/health
               port: 9090
-            failureThreshold: 18
+            failureThreshold: 12
             periodSeconds: 10
-          lifecycle:
-            preStop:
-              exec:
-                command: ["/bin/sh", "-c", "sleep 15"]
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: mapping-service
+  name: api-gateway
   namespace: interop
 spec:
   selector:
-    app: mapping-service
+    app: api-gateway
   ports:
-    - port: 8085
-      targetPort: 8085
+    - name: http
+      port: 8080
+      targetPort: 8080
 ---
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
-  name: mapping-service-hpa
+  name: api-gateway-hpa
   namespace: interop
 spec:
   scaleTargetRef:
     apiVersion: apps/v1
     kind: Deployment
-    name: mapping-service
+    name: api-gateway
   minReplicas: 2
-  maxReplicas: 10
+  maxReplicas: 8
   metrics:
     - type: Resource
       resource:
@@ -99,9 +93,3 @@ spec:
         target:
           type: Utilization
           averageUtilization: 70
-    - type: Resource
-      resource:
-        name: memory
-        target:
-          type: Utilization
-          averageUtilization: 80

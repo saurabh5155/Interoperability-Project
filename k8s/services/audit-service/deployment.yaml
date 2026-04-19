@@ -1,18 +1,19 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: routing-engine
+  name: audit-service
   namespace: interop
+  labels:
+    app: audit-service
 spec:
-  replicas: 3
+  replicas: 2
   selector:
     matchLabels:
-      app: routing-engine
+      app: audit-service
   template:
     metadata:
       labels:
-        app: routing-engine
-      labels:
+        app: audit-service
         tier: backend
     spec:
       securityContext:
@@ -20,11 +21,11 @@ spec:
         runAsUser: 1000
         fsGroup: 1000
       containers:
-        - name: routing-engine
-          image: ghcr.io/your-org/routing-engine:latest
+        - name: audit-service
+          image: ghcr.io/your-org/audit-service:latest
           ports:
             - name: http
-              containerPort: 8083
+              containerPort: 8089
             - name: management
               containerPort: 9090
           envFrom:
@@ -34,11 +35,11 @@ spec:
                 name: interop-secrets
           resources:
             requests:
-              memory: "384Mi"
-              cpu: "250m"
+              memory: "256Mi"
+              cpu: "150m"
             limits:
-              memory: "768Mi"
-              cpu: "1000m"
+              memory: "512Mi"
+              cpu: "500m"
           livenessProbe:
             httpGet:
               path: /actuator/health/liveness
@@ -63,31 +64,11 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: routing-engine
+  name: audit-service
   namespace: interop
 spec:
   selector:
-    app: routing-engine
+    app: audit-service
   ports:
-    - port: 8083
-      targetPort: 8083
----
-apiVersion: autoscaling/v2
-kind: HorizontalPodAutoscaler
-metadata:
-  name: routing-engine-hpa
-  namespace: interop
-spec:
-  scaleTargetRef:
-    apiVersion: apps/v1
-    kind: Deployment
-    name: routing-engine
-  minReplicas: 3
-  maxReplicas: 20
-  metrics:
-    - type: Resource
-      resource:
-        name: cpu
-        target:
-          type: Utilization
-          averageUtilization: 65
+    - port: 8089
+      targetPort: 8089

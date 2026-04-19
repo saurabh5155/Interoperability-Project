@@ -11,7 +11,7 @@ x-common-env: &common-env
   REDIS_PORT: 6379
   KAFKA_BOOTSTRAP_SERVERS: kafka:9092
   ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
-  AES_ENCRYPTION_KEY: ${AES_ENCRYPTION_KEY:-dGhpcy1pcy1hLTMyLWJ5dGUta2V5LXBhZGRpbmc=}
+  AES_ENCRYPTION_KEY: ${AES_ENCRYPTION_KEY:?AES_ENCRYPTION_KEY must be set to a base64-encoded 32-byte key}
 
 services:
 

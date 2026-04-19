@@ -31,7 +31,7 @@ spring:
       timeout: 5000
 
 security:
-  aes-encryption-key: ${AES_ENCRYPTION_KEY:dGhpcy1pcy1hLTMyLWJ5dGUta2V5LXBhZGRpbmc=}
+  aes-encryption-key: ${AES_ENCRYPTION_KEY}
 
 management:
   endpoints:

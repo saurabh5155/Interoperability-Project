@@ -1,5 +1,6 @@
 package com.healthcare.interop.registration.service;
 
+import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -27,6 +28,26 @@ public class CredentialEncryptionService {
     private String encryptionKey;
 
     private final SecureRandom random = new SecureRandom();
+
+    @PostConstruct
+    void validateEncryptionKey() {
+        if (encryptionKey == null || encryptionKey.isBlank()) {
+            throw new IllegalStateException(
+                "AES_ENCRYPTION_KEY is not configured. Set a base64-encoded 32-byte key.");
+        }
+        byte[] keyBytes;
+        try {
+            keyBytes = Base64.getDecoder().decode(encryptionKey);
+        } catch (IllegalArgumentException e) {
+            throw new IllegalStateException(
+                "AES_ENCRYPTION_KEY is not valid base64.", e);
+        }
+        if (keyBytes.length != 32) {
+            throw new IllegalStateException(
+                "AES_ENCRYPTION_KEY must decode to exactly 32 bytes (256 bits); got " + keyBytes.length);
+        }
+        log.info("AES-256-GCM credential encryption key validated.");
+    }
 
     public Map<String, String> encrypt(Map<String, String> config) {
         if (config == null) return new HashMap<>();

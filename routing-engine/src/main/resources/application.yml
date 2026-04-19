@@ -4,6 +4,12 @@ server:
 spring:
   application:
     name: routing-engine
+  webflux:
+    # Reject ingest payloads larger than 1 MB at the codec level.
+    # Prevents a single oversized EHR payload from consuming heap across
+    # all downstream services (FHIR, mapping, adapter) simultaneously.
+    codecs:
+      max-in-memory-size: 1MB
   kafka:
     bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
     producer:

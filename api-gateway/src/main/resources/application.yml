@@ -4,6 +4,8 @@ server:
 spring:
   application:
     name: api-gateway
+  codec:
+    max-in-memory-size: 1MB
   data:
     redis:
       host: ${REDIS_HOST:localhost}

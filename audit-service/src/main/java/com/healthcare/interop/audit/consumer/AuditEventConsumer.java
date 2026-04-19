@@ -6,7 +6,9 @@ import com.healthcare.interop.common.model.AuditEvent;
 import com.healthcare.interop.common.util.JsonUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.KafkaHeaders;
 import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.handler.annotation.Payload;
@@ -18,7 +20,13 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 public class AuditEventConsumer {
 
+    private static final String DLQ_TOPIC = "interop.dlq";
+
     private final AuditLogRepository auditLogRepository;
+    private final KafkaTemplate<String, String> kafkaTemplate;
+
+    @Value("${spring.kafka.bootstrap-servers}")
+    private String bootstrapServers;
 
     @KafkaListener(
         topics = "#{T(com.healthcare.interop.common.model.AuditEvent).TOPIC}",
@@ -52,9 +60,30 @@ public class AuditEventConsumer {
             auditLogRepository.save(entity);
             log.debug("Audit event persisted: correlationId={} status={}",
                 event.getCorrelationId(), event.getStatus());
+
         } catch (Exception e) {
-            log.error("Failed to process audit event at partition={} offset={}: {}",
+            log.error("Failed to process audit event at partition={} offset={}: {} — routing to DLQ",
                 partition, offset, e.getMessage());
+            sendToDlq(message, partition, offset, e);
+            // Re-throw so Kafka does not commit the offset when using manual ack mode.
+            // With the default auto-commit the DLQ ensures no event is silently lost.
+            throw new RuntimeException("Audit event processing failed; message sent to DLQ", e);
+        }
+    }
+
+    private void sendToDlq(String originalMessage, int partition, long offset, Exception cause) {
+        try {
+            String dlqPayload = String.format(
+                "{\"originalTopic\":\"%s\",\"partition\":%d,\"offset\":%d," +
+                "\"error\":\"%s\",\"originalMessage\":%s}",
+                AuditEvent.TOPIC, partition, offset,
+                cause.getMessage() == null ? "unknown" : cause.getMessage().replace("\"", "'"),
+                originalMessage);
+            kafkaTemplate.send(DLQ_TOPIC, dlqPayload);
+            log.warn("Audit event forwarded to DLQ: partition={} offset={}", partition, offset);
+        } catch (Exception dlqEx) {
+            log.error("CRITICAL: failed to send audit event to DLQ (partition={} offset={}): {}",
+                partition, offset, dlqEx.getMessage());
         }
     }
 }

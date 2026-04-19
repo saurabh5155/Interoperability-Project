@@ -91,8 +91,8 @@ services:
   # ─── API Gateway ────────────────────────────────────────────────────────
   api-gateway:
     build:
-      context: ./api-gateway
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: api-gateway/Dockerfile
     ports:
       - "8080:8080"
     environment:
@@ -108,8 +108,8 @@ services:
   # ─── EHR Registration Service ───────────────────────────────────────────
   ehr-registration-service:
     build:
-      context: ./ehr-registration-service
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: ehr-registration-service/Dockerfile
     ports:
       - "8081:8081"
     environment:
@@ -124,8 +124,8 @@ services:
   # ─── Subscription Service ───────────────────────────────────────────────
   subscription-service:
     build:
-      context: ./subscription-service
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: subscription-service/Dockerfile
     ports:
       - "8082:8082"
     environment:
@@ -140,8 +140,8 @@ services:
   # ─── Routing Engine ─────────────────────────────────────────────────────
   routing-engine:
     build:
-      context: ./routing-engine
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: routing-engine/Dockerfile
     ports:
       - "8083:8083"
     environment:
@@ -158,8 +158,8 @@ services:
   # ─── Dynamic Adapter Service ────────────────────────────────────────────
   dynamic-adapter-service:
     build:
-      context: ./dynamic-adapter-service
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: dynamic-adapter-service/Dockerfile
     ports:
       - "8084:8084"
     environment:
@@ -172,8 +172,8 @@ services:
   # ─── Mapping Service ────────────────────────────────────────────────────
   mapping-service:
     build:
-      context: ./mapping-service
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: mapping-service/Dockerfile
     ports:
       - "8085:8085"
     environment:
@@ -192,8 +192,8 @@ services:
   # ─── FHIR Canonical Service ─────────────────────────────────────────────
   fhir-canonical-service:
     build:
-      context: ./fhir-canonical-service
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: fhir-canonical-service/Dockerfile
     ports:
       - "8086:8086"
     environment:
@@ -203,8 +203,8 @@ services:
   # ─── Context Resolver Service ───────────────────────────────────────────
   context-resolver-service:
     build:
-      context: ./context-resolver-service
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: context-resolver-service/Dockerfile
     ports:
       - "8087:8087"
     environment:
@@ -217,8 +217,8 @@ services:
   # ─── Validation Service ─────────────────────────────────────────────────
   validation-service:
     build:
-      context: ./validation-service
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: validation-service/Dockerfile
     ports:
       - "8088:8088"
     restart: unless-stopped
@@ -226,8 +226,8 @@ services:
   # ─── Audit Service ──────────────────────────────────────────────────────
   audit-service:
     build:
-      context: ./audit-service
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: audit-service/Dockerfile
     ports:
       - "8089:8089"
     environment:

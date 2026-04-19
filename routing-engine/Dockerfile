@@ -6,15 +6,15 @@ FROM maven:3.9.6-eclipse-temurin-17 AS builder
 WORKDIR /build
 COPY pom.xml ./
 COPY common/pom.xml common/pom.xml
-COPY mapping-service/pom.xml mapping-service/pom.xml
-RUN mvn dependency:go-offline -pl mapping-service -am -q
+COPY routing-engine/pom.xml routing-engine/pom.xml
+RUN mvn dependency:go-offline -pl routing-engine -am -q
 COPY common/src common/src
-COPY mapping-service/src mapping-service/src
-RUN mvn package -pl mapping-service -am -DskipTests -q
+COPY routing-engine/src routing-engine/src
+RUN mvn package -pl routing-engine -am -DskipTests -q
 
 FROM base
-COPY --from=builder /build/mapping-service/target/*.jar app.jar
+COPY --from=builder /build/routing-engine/target/*.jar app.jar
 RUN chown interop:interop app.jar
 USER interop
-EXPOSE 8085
+EXPOSE 8083
 ENTRYPOINT ["java", "-XX:+UseContainerSupport", "-XX:MaxRAMPercentage=75.0", "-jar", "app.jar"]

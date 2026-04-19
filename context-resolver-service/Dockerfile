@@ -6,15 +6,15 @@ FROM maven:3.9.6-eclipse-temurin-17 AS builder
 WORKDIR /build
 COPY pom.xml ./
 COPY common/pom.xml common/pom.xml
-COPY mapping-service/pom.xml mapping-service/pom.xml
-RUN mvn dependency:go-offline -pl mapping-service -am -q
+COPY context-resolver-service/pom.xml context-resolver-service/pom.xml
+RUN mvn dependency:go-offline -pl context-resolver-service -am -q
 COPY common/src common/src
-COPY mapping-service/src mapping-service/src
-RUN mvn package -pl mapping-service -am -DskipTests -q
+COPY context-resolver-service/src context-resolver-service/src
+RUN mvn package -pl context-resolver-service -am -DskipTests -q
 
 FROM base
-COPY --from=builder /build/mapping-service/target/*.jar app.jar
+COPY --from=builder /build/context-resolver-service/target/*.jar app.jar
 RUN chown interop:interop app.jar
 USER interop
-EXPOSE 8085
+EXPOSE 8087
 ENTRYPOINT ["java", "-XX:+UseContainerSupport", "-XX:MaxRAMPercentage=75.0", "-jar", "app.jar"]

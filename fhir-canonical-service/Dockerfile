@@ -6,15 +6,15 @@ FROM maven:3.9.6-eclipse-temurin-17 AS builder
 WORKDIR /build
 COPY pom.xml ./
 COPY common/pom.xml common/pom.xml
-COPY mapping-service/pom.xml mapping-service/pom.xml
-RUN mvn dependency:go-offline -pl mapping-service -am -q
+COPY fhir-canonical-service/pom.xml fhir-canonical-service/pom.xml
+RUN mvn dependency:go-offline -pl fhir-canonical-service -am -q
 COPY common/src common/src
-COPY mapping-service/src mapping-service/src
-RUN mvn package -pl mapping-service -am -DskipTests -q
+COPY fhir-canonical-service/src fhir-canonical-service/src
+RUN mvn package -pl fhir-canonical-service -am -DskipTests -q
 
 FROM base
-COPY --from=builder /build/mapping-service/target/*.jar app.jar
+COPY --from=builder /build/fhir-canonical-service/target/*.jar app.jar
 RUN chown interop:interop app.jar
 USER interop
-EXPOSE 8085
+EXPOSE 8086
 ENTRYPOINT ["java", "-XX:+UseContainerSupport", "-XX:MaxRAMPercentage=75.0", "-jar", "app.jar"]

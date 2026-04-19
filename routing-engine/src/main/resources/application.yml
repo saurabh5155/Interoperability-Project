@@ -28,6 +28,8 @@ spring:
 routing:
   status-cache:
     ttl-minutes: ${ROUTING_STATUS_CACHE_TTL_MINUTES:60}
+  idempotency:
+    ttl-hours: ${ROUTING_IDEMPOTENCY_TTL_HOURS:24}
 
 services:
   subscription-service:

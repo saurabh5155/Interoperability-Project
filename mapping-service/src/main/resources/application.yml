@@ -42,10 +42,16 @@ services:
     url: ${VALIDATION_SERVICE_URL:http://validation-service:8088}
 
 management:
+  server:
+    port: 9090
   endpoints:
     web:
+      base-path: /actuator
       exposure:
         include: health,info,metrics,prometheus
+  endpoint:
+    health:
+      show-details: when-authorized
 
 logging:
   level:

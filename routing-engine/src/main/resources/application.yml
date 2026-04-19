@@ -46,7 +46,13 @@ resilience4j:
         exponentialBackoffMultiplier: 2
 
 management:
+  server:
+    port: 9090
   endpoints:
     web:
+      base-path: /actuator
       exposure:
         include: health,info,metrics,prometheus
+  endpoint:
+    health:
+      show-details: when-authorized

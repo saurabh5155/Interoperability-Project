@@ -22,7 +22,13 @@ resilience4j:
         waitDurationInOpenState: 30s
 
 management:
+  server:
+    port: 9090
   endpoints:
     web:
+      base-path: /actuator
       exposure:
-        include: health,info,metrics
+        include: health,info,metrics,prometheus
+  endpoint:
+    health:
+      show-details: when-authorized

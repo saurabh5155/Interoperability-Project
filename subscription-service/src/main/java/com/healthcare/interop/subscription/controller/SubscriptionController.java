@@ -1,5 +1,6 @@
 package com.healthcare.interop.subscription.controller;
 
+import com.healthcare.interop.common.audit.AdminAudit;
 import com.healthcare.interop.common.enums.ResourceType;
 import com.healthcare.interop.subscription.dto.AssignSubscriptionRequest;
 import com.healthcare.interop.subscription.dto.CreatePlanRequest;
@@ -13,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ServerWebExchange;
 
 import java.util.List;
 import java.util.Map;
@@ -25,9 +27,11 @@ public class SubscriptionController {
 
     private final SubscriptionService subscriptionService;
 
+    @AdminAudit(action = "CREATE_PLAN", resource = "SubscriptionPlan")
     @PostMapping("/plans")
     public ResponseEntity<SubscriptionPlanEntity> createPlan(
-            @Valid @RequestBody CreatePlanRequest request) {
+            @Valid @RequestBody CreatePlanRequest request,
+            ServerWebExchange exchange) {
         return ResponseEntity.status(HttpStatus.CREATED)
             .body(subscriptionService.createPlan(request));
     }
@@ -37,16 +41,20 @@ public class SubscriptionController {
         return ResponseEntity.ok(subscriptionService.listPlans());
     }
 
+    @AdminAudit(action = "ASSIGN_SUBSCRIPTION", resource = "EhrSubscription")
     @PostMapping("/subscriptions")
     public ResponseEntity<EhrSubscriptionEntity> assignSubscription(
-            @Valid @RequestBody AssignSubscriptionRequest request) {
+            @Valid @RequestBody AssignSubscriptionRequest request,
+            ServerWebExchange exchange) {
         return ResponseEntity.status(HttpStatus.CREATED)
             .body(subscriptionService.assignSubscription(request));
     }
 
+    @AdminAudit(action = "CREATE_ROUTING_RULE", resource = "RoutingRule")
     @PostMapping("/routing-rules")
     public ResponseEntity<RoutingRuleEntity> createRoutingRule(
-            @Valid @RequestBody CreateRoutingRuleRequest request) {
+            @Valid @RequestBody CreateRoutingRuleRequest request,
+            ServerWebExchange exchange) {
         return ResponseEntity.status(HttpStatus.CREATED)
             .body(subscriptionService.createRoutingRule(request));
     }
@@ -64,10 +72,12 @@ public class SubscriptionController {
         return ResponseEntity.ok(subscriptionService.getActiveRoutes(sourceEhrCode, resourceType));
     }
 
+    @AdminAudit(action = "TOGGLE_ROUTING_RULE", resource = "RoutingRule")
     @PutMapping("/routing-rules/{id}/toggle")
     public ResponseEntity<Map<String, Object>> toggleRule(
             @PathVariable UUID id,
-            @RequestParam boolean active) {
+            @RequestParam boolean active,
+            ServerWebExchange exchange) {
         subscriptionService.toggleRoutingRule(id, active);
         return ResponseEntity.ok(Map.of("id", id, "active", active));
     }

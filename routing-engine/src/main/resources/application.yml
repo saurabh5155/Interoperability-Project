@@ -20,6 +20,15 @@ spring:
       properties:
         enable.idempotence: true
 
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+
+routing:
+  status-cache:
+    ttl-minutes: ${ROUTING_STATUS_CACHE_TTL_MINUTES:60}
+
 services:
   subscription-service:
     url: ${SUBSCRIPTION_SERVICE_URL:http://subscription-service:8082}

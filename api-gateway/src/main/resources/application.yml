@@ -83,10 +83,8 @@ spring:
         corsConfigurations:
           '[/**]':
             allowedOrigins:
-              - "http://localhost:3000"
-              - "http://localhost:3001"
-              - "${ADMIN_PORTAL_ORIGIN:https://admin.your-domain.com}"
-              - "${EHR_PORTAL_ORIGIN:https://portal.your-domain.com}"
+              - "${ADMIN_PORTAL_ORIGIN}"
+              - "${EHR_PORTAL_ORIGIN}"
             allowedMethods: [GET, POST, PUT, PATCH, DELETE, OPTIONS]
             allowedHeaders: ['*']
             allowCredentials: true

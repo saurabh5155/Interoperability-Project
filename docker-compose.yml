@@ -12,6 +12,9 @@ x-common-env: &common-env
   KAFKA_BOOTSTRAP_SERVERS: kafka:9092
   ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
   AES_ENCRYPTION_KEY: ${AES_ENCRYPTION_KEY:?AES_ENCRYPTION_KEY must be set to a base64-encoded 32-byte key}
+  # CORS: override in production with actual frontend domains
+  ADMIN_PORTAL_ORIGIN: ${ADMIN_PORTAL_ORIGIN:-http://localhost:3001}
+  EHR_PORTAL_ORIGIN: ${EHR_PORTAL_ORIGIN:-http://localhost:3000}
 
 services:
 

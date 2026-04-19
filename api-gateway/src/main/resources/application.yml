@@ -102,7 +102,18 @@ management:
     health:
       show-details: when-authorized
 
+otel:
+  exporter:
+    otlp:
+      endpoint: ${OTEL_EXPORTER_ENDPOINT:http://localhost:4318}
+  traces:
+    exporter: otlp
+  metrics:
+    exporter: none
+
 logging:
   level:
     org.springframework.cloud.gateway: INFO
     com.healthcare.interop: INFO
+  pattern:
+    level: "%5p [%X{traceId:-},${X{spanId:-}}]"

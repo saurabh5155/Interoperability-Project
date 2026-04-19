@@ -39,3 +39,16 @@ management:
   endpoint:
     health:
       show-details: when-authorized
+
+otel:
+  exporter:
+    otlp:
+      endpoint: ${OTEL_EXPORTER_ENDPOINT:http://localhost:4318}
+  traces:
+    exporter: otlp
+  metrics:
+    exporter: none
+
+logging:
+  pattern:
+    level: "%5p [%X{traceId:-},${X{spanId:-}}]"

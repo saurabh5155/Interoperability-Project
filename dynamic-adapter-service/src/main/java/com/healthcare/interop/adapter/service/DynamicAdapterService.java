@@ -80,6 +80,13 @@ public class DynamicAdapterService {
                         ? responseExtractor.extract(response, config.getResponsePath())
                         : response)
                     .doOnNext(r -> log.info("EHR {} responded successfully", config.getEhrCode()))
+                    .onErrorResume(WebClientResponseException.Unauthorized.class, e -> {
+                        // Target EHR rejected the token — purge cache so the next
+                        // retry (via Resilience4j @Retry) fetches a fresh token.
+                        log.warn("EHR {} returned 401; invalidating cached OAuth2 token", config.getEhrCode());
+                        return authTokenResolver.invalidateCachedToken(config.getEhrCode())
+                            .then(Mono.error(e));
+                    })
                     .doOnError(e -> log.error("EHR {} call failed: {}", config.getEhrCode(), e.getMessage()));
             });
     }
